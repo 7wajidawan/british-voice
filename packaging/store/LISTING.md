@@ -1,6 +1,6 @@
 # Microsoft Store listing — copy & paste into Partner Center
 
-**App name:** British Voice   _(if taken, try "British Voice for Calls")_
+**App name:** British Voice Converter
 
 **Category:** Productivity  (sub-category: none)
 

@@ -9,12 +9,12 @@ jobs:
   build:
     runs-on: windows-latest
     env:
-      # Set these under Settings > Secrets and variables > Actions > Variables,
-      # copying the values from Partner Center > Product identity.
-      IDENTITY_NAME: ${{ vars.IDENTITY_NAME || 'BritishVoice.Test' }}
-      PUBLISHER: ${{ vars.PUBLISHER || 'CN=BritishVoiceTest' }}
-      PUBLISHER_DISPLAY_NAME: ${{ vars.PUBLISHER_DISPLAY_NAME || 'British Voice' }}
-      DISPLAY_NAME: ${{ vars.DISPLAY_NAME || 'British Voice' }}
+      # From Partner Center > Product management > Product identity (not secret:
+      # these are written into every published package's manifest).
+      IDENTITY_NAME: WajidAwan.BritishVoice
+      PUBLISHER: CN=ADC9F747-9C47-4952-B515-FC8FEE53FED5
+      PUBLISHER_DISPLAY_NAME: Wajid Awan
+      DISPLAY_NAME: British Voice Converter
       VERSION: 1.0.${{ github.run_number }}.0
     steps:
       - uses: actions/checkout@v4

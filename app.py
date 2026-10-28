@@ -256,7 +256,7 @@ def load_json(path, default):
 class App:
     def __init__(self, root):
         self.root = root
-        root.title("British Voice")
+        root.title("British Voice Converter")
         root.geometry("660x560")
         self.team = load_json(TEAM_FILE, {"profiles": []})["profiles"]
         self.saved = {**DEFAULTS, **load_json(SETTINGS_FILE, {})}
