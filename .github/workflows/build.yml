@@ -1,0 +1,66 @@
+name: Build Windows app
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+      # Set these under Settings > Secrets and variables > Actions > Variables,
+      # copying the values from Partner Center > Product identity.
+      IDENTITY_NAME: ${{ vars.IDENTITY_NAME || 'BritishVoice.Test' }}
+      PUBLISHER: ${{ vars.PUBLISHER || 'CN=BritishVoiceTest' }}
+      PUBLISHER_DISPLAY_NAME: ${{ vars.PUBLISHER_DISPLAY_NAME || 'British Voice' }}
+      DISPLAY_NAME: ${{ vars.DISPLAY_NAME || 'British Voice' }}
+      VERSION: 1.0.${{ github.run_number }}.0
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install libraries
+        run: pip install -r requirements.txt pyinstaller
+
+      - name: Build BritishVoice.exe
+        run: >
+          pyinstaller -y --onedir --windowed --name BritishVoice
+          --icon packaging/icon.ico --add-data "team.json;."
+          --collect-all piper --collect-all faster_whisper
+          --collect-all ctranslate2 --collect-all onnxruntime
+          --hidden-import sounddevice app.py
+
+      - name: Self-test the built app
+        shell: pwsh
+        run: |
+          $p = Start-Process dist\BritishVoice\BritishVoice.exe -ArgumentList '--self-test' -Wait -PassThru
+          if (-not (Test-Path "$env:LOCALAPPDATA\BritishVoice\self_test_ok.txt")) {
+            Get-Content "$env:LOCALAPPDATA\BritishVoice\error_log.txt" -ErrorAction SilentlyContinue
+            throw "Self-test failed (exit code $($p.ExitCode))"
+          }
+
+      - name: Make Store package (MSIX)
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory msix\Assets -Force | Out-Null
+          Copy-Item dist\BritishVoice msix\BritishVoice -Recurse
+          Copy-Item packaging\Assets\* msix\Assets
+          $m = Get-Content packaging\AppxManifest.xml -Raw
+          foreach ($k in 'IDENTITY_NAME','PUBLISHER','PUBLISHER_DISPLAY_NAME','DISPLAY_NAME','VERSION') {
+            $m = $m.Replace("__${k}__", [Security.SecurityElement]::Escape((Get-Item "env:$k").Value))
+          }
+          Set-Content msix\AppxManifest.xml $m -Encoding utf8
+          $mk = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\makeappx.exe" |
+                Sort-Object FullName -Descending | Select-Object -First 1
+          & $mk.FullName pack /d msix /p "BritishVoice-$env:VERSION.msix" /o
+          if ($LASTEXITCODE) { throw "makeappx failed" }
+
+      - name: Upload Store package
+        uses: actions/upload-artifact@v4
+        with:
+          name: BritishVoice-Store-package
+          path: BritishVoice-*.msix

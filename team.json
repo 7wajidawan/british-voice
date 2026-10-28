@@ -1,0 +1,15 @@
+{
+  "_help": "One profile per team member. Each person picks their own name in the app. 'voice' is a Piper en_GB voice; for en_GB-vctk-medium change speaker_id (0-108) to get a different person. 'speed': 1.0 normal, 0.9 faster, 1.1 slower.",
+  "profiles": [
+    {"name": "Alan (male, RP)",                "voice": "en_GB-alan-medium",                    "speed": 1.0},
+    {"name": "Jenny (female, London)",         "voice": "en_GB-jenny_dioco-medium",             "speed": 1.0},
+    {"name": "Cori (female, clear)",           "voice": "en_GB-cori-high",                      "speed": 1.0},
+    {"name": "Northern (male)",                "voice": "en_GB-northern_english_male-medium",   "speed": 1.0},
+    {"name": "Southern (female)",              "voice": "en_GB-southern_english_female-low",    "speed": 1.0},
+    {"name": "Alba (female, Scottish)",        "voice": "en_GB-alba-medium",                    "speed": 1.0},
+    {"name": "Team voice 7",                   "voice": "en_GB-vctk-medium", "speaker_id": 3,   "speed": 1.0},
+    {"name": "Team voice 8",                   "voice": "en_GB-vctk-medium", "speaker_id": 12,  "speed": 1.0},
+    {"name": "Team voice 9",                   "voice": "en_GB-vctk-medium", "speaker_id": 25,  "speed": 1.0},
+    {"name": "Team voice 10",                  "voice": "en_GB-vctk-medium", "speaker_id": 40,  "speed": 1.0}
+  ]
+}

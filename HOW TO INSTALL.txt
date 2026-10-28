@@ -1,0 +1,20 @@
+BRITISH VOICE - HOW TO INSTALL  (Windows 10/11, free)
+=====================================================
+
+INSTALL (one time, about 10 minutes)
+  1. Unzip this folder into Documents (do not run it from inside the zip).
+  2. Double-click INSTALL.bat
+       - If Windows says "Windows protected your PC": click More info -> Run anyway.
+       - When asked: click Yes -> then click "Install Driver".
+  3. Restart your PC.
+
+USE IT
+  1. Open "British Voice" from your Desktop.
+  2. Pick your voice -> click Start. (The first Start downloads files, wait 1-2 minutes.)
+  3. In Zoom/Teams settings, set Microphone = "CABLE Output".
+  Use headphones.
+
+TEAM: each person installs it on their own laptop and picks a DIFFERENT voice.
+
+NOTE: the British voice plays about 1-2 seconds after you finish each sentence.
+If something goes wrong, send a screenshot (or the file error_log.txt) to get it fixed.
