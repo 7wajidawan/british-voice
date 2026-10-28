@@ -18,8 +18,9 @@ You do the account steps; GitHub builds the Store file for you automatically.
 
 ## 3. Put the code on GitHub (free)
 1. Sign up at **https://github.com** if you don't have an account.
-2. Create a new repository called **british-voice** and upload the files from this folder
-   (including the hidden `.github` folder).
+2. Create a new repository called **british-voice**, set it to **Public** (required by the
+   open-source licence of the voice engine), and upload the files from this folder
+   (including the `.github` folder).
 3. In the repository: **Settings → Secrets and variables → Actions → Variables tab →
    New repository variable**. Add:
    - `IDENTITY_NAME` = Package/Identity/Name
@@ -45,6 +46,7 @@ In Partner Center open the app → **Start submission**:
   screenshot = `packaging/store/screenshot.png`; logo = `packaging/store/StoreListing300.png`.
 - **Submission options → Restricted capabilities**: paste the *runFullTrust justification*
   from `LISTING.md`.
+- **Submission options → Notes for certification**: paste the certification notes from `LISTING.md`.
 - Click **Submit to the Store**. Review usually takes 1–3 business days.
 
 ## 6. Install it (you and your team)

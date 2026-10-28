@@ -24,12 +24,18 @@ jobs:
           python-version: '3.11'
 
       - name: Install libraries
-        run: pip install -r requirements.txt pyinstaller
+        # PyInstaller's launcher is compiled from source here, which avoids the
+        # antivirus false alarms its shared pre-built launcher sometimes triggers.
+        env:
+          PYINSTALLER_COMPILE_BOOTLOADER: '1'
+        run: |
+          pip install -r requirements.txt
+          pip install --no-binary pyinstaller pyinstaller
 
       - name: Build BritishVoice.exe
         run: >
           pyinstaller -y --onedir --windowed --name BritishVoice
-          --icon packaging/icon.ico --add-data "team.json;."
+          --icon packaging/icon.ico --add-data "team.json;." --add-data "CREDITS.md;." --add-data "LICENSE;."
           --collect-all piper --collect-all faster_whisper
           --collect-all ctranslate2 --collect-all onnxruntime
           --hidden-import sounddevice app.py

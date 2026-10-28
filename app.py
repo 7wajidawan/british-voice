@@ -48,8 +48,9 @@ FRAME_MS = 30
 DEFAULTS = {"pause_ms": 600, "sensitivity": 3.0}
 
 # Whisper sometimes "hears" these in silence or noise; never speak them.
-HALLUCINATIONS = {"", "you", "thank you.", "thanks for watching!", "thank you for watching.",
-                  "bye.", ".", "thank you", "so", "okay."}
+# (Real short replies like "Thank you." are kept: no_speech_prob filters noise.)
+HALLUCINATIONS = {"", ".", "you", "thanks for watching!", "thank you for watching.",
+                  "subtitles by the amara.org community"}
 
 
 # --------------------------------------------------------------------------- #
@@ -186,7 +187,8 @@ class Engine:
                 self.log("Listening... speak normally.")
                 stop.wait()
         except Exception as e:
-            self.log(f"Microphone error: {e}")
+            self.log(f"Microphone error: {e}\nCheck Windows Settings > Privacy & security > "
+                     "Microphone: turn on 'Let desktop apps access your microphone'.")
             stop.set()
 
     def _segment(self, stop, frames, utterances, rate, settings, monitor):
@@ -308,6 +310,8 @@ class App:
         ttk.Button(btns, text="Preview voice", command=self.preview).pack(side="left", padx=4)
         self.go = ttk.Button(btns, text="Start", command=self.toggle)
         self.go.pack(side="left", padx=4)
+        ttk.Button(btns, text="Credits", command=lambda: webbrowser.open(
+            (APP_DIR / "CREDITS.md").as_uri())).pack(side="left", padx=4)
         self.has_cable = any("cable input" in o.lower() for o in outputs)
         if not self.has_cable:
             ttk.Button(btns, text="Get virtual microphone (free)",

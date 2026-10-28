@@ -34,7 +34,7 @@ Please note:
 - Works with Zoom, Microsoft Teams, Google Meet
 - Runs offline on your PC – private by design
 
-**Search terms:** british accent, accent, voice changer, zoom, teams, call, uk voice
+**Search terms:** british accent, accent, voice, uk voice, english accent, calls, meetings
 
 **Privacy policy URL:** link to PRIVACY.md on GitHub (see STORE_GUIDE.md step 5)
 
@@ -45,6 +45,17 @@ no personal data collected → result should be 3+ / Everyone.
 British Voice is a desktop (Win32) app built with Python. It needs full trust to capture
 microphone audio and play generated speech to a user-selected audio output device
 (the VB-Cable virtual microphone), which is not possible from a sandboxed app.
+
+**Notes for certification (Submission options → Notes for certification):**
+To test without extra software: open the app, click "Preview voice" to hear a British voice.
+Then set "Send voice to" = your speakers and click Start; speak into the microphone and the
+app repeats your words in a British voice after you pause. First use downloads speech/voice
+model files (about 150 MB) from huggingface.co. For use in calling apps, the free third-party
+VB-Cable virtual audio driver is optional and linked from the app; it is not bundled.
+The app is open source (GPL-3.0); the source code link is in the description.
+
+**Add to the end of the Description:**
+Free and open source (GPL-3.0). Source code: <your GitHub repository link>
 
 **Screenshots:** packaging/store/screenshot.png (or take your own of the app window).
 **Logo (300×300):** packaging/store/StoreListing300.png
