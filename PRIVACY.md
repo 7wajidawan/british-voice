@@ -13,4 +13,4 @@ British Voice turns your speech into a British-accented voice for calls.
   `%LOCALAPPDATA%\BritishVoice`. Uninstalling the app and deleting that folder removes everything.
 - **Microphone.** The app uses your microphone only while you have pressed **Start**.
 
-Questions: YOUR-EMAIL-HERE
+Questions or requests: https://github.com/7wajidawan/british-voice/issues

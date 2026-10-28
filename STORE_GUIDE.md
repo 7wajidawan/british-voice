@@ -39,7 +39,7 @@ In Partner Center open the app → **Start submission**:
 - **Pricing and availability**: Free. Under *Visibility* choose
   **"Hide this product in the Store"** (only people with the link can install it), or Public.
 - **Properties**: Category **Productivity**. Privacy policy URL: the link to `PRIVACY.md`
-  in your GitHub repository (first replace `YOUR-EMAIL-HERE` in that file with your email).
+  in your GitHub repository.
 - **Age ratings**: answer the questionnaire (no violence, no data collection, no purchases).
 - **Packages**: upload the `.msix` file.
 - **Store listings → English**: copy everything from `packaging/store/LISTING.md`;
