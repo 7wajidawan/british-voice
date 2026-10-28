@@ -36,7 +36,8 @@ jobs:
         run: >
           pyinstaller -y --onedir --windowed --name BritishVoice
           --icon packaging/icon.ico --add-data "team.json;." --add-data "CREDITS.md;." --add-data "LICENSE;."
-          --collect-all piper --collect-all faster_whisper
+          --collect-all kokoro_onnx --collect-all espeakng_loader
+          --collect-all phonemizer --collect-all faster_whisper
           --collect-all ctranslate2 --collect-all onnxruntime
           --hidden-import sounddevice app.py
 

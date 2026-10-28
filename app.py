@@ -2,7 +2,7 @@
 British Voice - speak normally, your Zoom/Teams call hears you in a British accent.
 
 Pipeline (100% free, runs offline on your laptop):
-  your microphone -> Whisper (speech-to-text) -> Piper (British text-to-speech)
+  your microphone -> Whisper (speech-to-text) -> Kokoro (British text-to-speech)
   -> VB-Cable virtual microphone -> selected as the microphone in Zoom/Teams
 
 Each team member picks a different profile in team.json, so everyone gets
@@ -38,10 +38,8 @@ if not TEAM_FILE.exists():
 SETTINGS_FILE = DATA_DIR / "settings.json"
 ERROR_LOG = DATA_DIR / "error_log.txt"
 VBCABLE_URL = "https://vb-audio.com/Cable/"
-VOICE_URL = (
-    "https://huggingface.co/rhasspy/piper-voices/resolve/main/"
-    "en/en_GB/{speaker}/{quality}/{name}{ext}"
-)
+KOKORO_URL = "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/"
+KOKORO_FILES = ("voices-v1.0.bin", "kokoro-v1.0.onnx")
 
 WHISPER_RATE = 16000      # Whisper expects 16 kHz mono
 FRAME_MS = 30
@@ -56,21 +54,20 @@ HALLUCINATIONS = {"", ".", "you", "thanks for watching!", "thank you for watchin
 # --------------------------------------------------------------------------- #
 # Audio helpers
 # --------------------------------------------------------------------------- #
-def ensure_voice(name: str, log) -> Path:
-    """Download a Piper voice (e.g. en_GB-vctk-medium) the first time it is used."""
+def ensure_voices(log) -> tuple[Path, Path]:
+    """Download the Kokoro voice model (about 350 MB) the first time it is used."""
     VOICES_DIR.mkdir(exist_ok=True)
-    onnx = VOICES_DIR / f"{name}.onnx"
-    cfg = VOICES_DIR / f"{name}.onnx.json"
-    if onnx.exists() and cfg.exists():
-        return onnx
-    _, speaker, quality = name.split("-")
-    for ext, target in ((".onnx.json", cfg), (".onnx", onnx)):
-        url = VOICE_URL.format(speaker=speaker, quality=quality, name=name, ext=ext)
-        log(f"Downloading voice {name}{ext} (first time only)...")
-        tmp = target.with_suffix(target.suffix + ".part")
-        urllib.request.urlretrieve(url, tmp)
-        tmp.replace(target)
-    return onnx
+    paths = []
+    for name in KOKORO_FILES:
+        target = VOICES_DIR / name
+        if not target.exists():
+            log(f"Downloading British voices: {name} (first time only, please wait)...")
+            tmp = target.with_suffix(target.suffix + ".part")
+            urllib.request.urlretrieve(KOKORO_URL + name, tmp)
+            tmp.replace(target)
+        paths.append(target)
+    voices, model = paths
+    return model, voices
 
 
 def resample(audio: np.ndarray, src: int, dst: int) -> np.ndarray:
@@ -118,8 +115,7 @@ class Engine:
         self.on_text = on_text
         self.whisper = None
         self.whisper_size = None
-        self.voice = None
-        self.voice_name = None
+        self.tts = None
         self.stop_event = threading.Event()
         self.stop_event.set()
         self.playing = threading.Event()
@@ -138,26 +134,21 @@ class Engine:
         self.whisper_size = size
         self.log("Speech recogniser ready.")
 
-    def load_voice(self, name: str):
-        if self.voice is not None and self.voice_name == name:
+    def load_voices(self):
+        if self.tts is not None:
             return
-        from piper import PiperVoice
-        path = ensure_voice(name, self.log)
-        self.voice = PiperVoice.load(str(path))
-        self.voice_name = name
-        self.log(f"Voice {name} ready.")
+        from kokoro_onnx import Kokoro
+        model, voices = ensure_voices(self.log)
+        self.tts = Kokoro(str(model), str(voices))
+        self.log("British voices ready.")
 
     def synthesize(self, text: str, profile: dict) -> tuple[np.ndarray, int]:
-        from piper import SynthesisConfig
-        cfg = SynthesisConfig(
-            speaker_id=profile.get("speaker_id"),
-            length_scale=profile.get("speed", 1.0),
-        )
-        chunks, rate = [], self.voice.config.sample_rate
-        for chunk in self.voice.synthesize(text, syn_config=cfg):
-            chunks.append(chunk.audio_float_array)
-            rate = chunk.sample_rate
-        audio = np.concatenate(chunks) if chunks else np.zeros(0, np.float32)
+        voice = profile["voice"]
+        if isinstance(voice, list):
+            # a mix of two or more voices gives a new, distinct voice
+            voice = np.mean([self.tts.get_voice_style(v) for v in voice], axis=0)
+        audio, rate = self.tts.create(text, voice=voice, speed=profile.get("speed", 1.0),
+                                      lang="en-gb")
         return audio.astype(np.float32), rate
 
     # ---- live loop ------------------------------------------------------ #
@@ -384,7 +375,7 @@ class App:
 
         def run():
             try:
-                self.engine.load_voice(prof["voice"])
+                self.engine.load_voices()
                 audio, rate = self.engine.synthesize(
                     "Hello, lovely to meet you all. Shall we get started?", prof)
                 play(audio, rate, None)
@@ -410,7 +401,7 @@ class App:
         def run():
             try:
                 self.engine.load_whisper(self.model.get())
-                self.engine.load_voice(prof["voice"])
+                self.engine.load_voices()
                 self.engine.start(prof, self.dev(self.mic), self.dev(self.out),
                                   self.monitor.get(), self.saved)
             except Exception as e:
@@ -436,10 +427,16 @@ def main():
         # used by the build: proves the packaged app has everything it needs
         # (errors go to the log, never a popup, so an unattended build can't hang)
         try:
-            from piper.phonemize_espeak import EspeakPhonemizer
+            from kokoro_onnx import Kokoro  # noqa: F401
+            from kokoro_onnx.tokenizer import Tokenizer
             from faster_whisper.vad import get_speech_timestamps
             import ctranslate2, onnxruntime  # noqa: F401
-            EspeakPhonemizer().phonemize("en-gb-x-rp", "Hello there.")
+            assert Tokenizer().phonemize("Hello there.", "en-gb")
+            if all((VOICES_DIR / f).exists() for f in KOKORO_FILES):
+                eng = Engine(lambda m: None, None)
+                eng.load_voices()
+                audio, _ = eng.synthesize("Hello there.", {"voice": ["bm_george", "bf_emma"]})
+                assert len(audio) > 0
             get_speech_timestamps(np.zeros(WHISPER_RATE, np.float32))
             tk.Tcl()  # Tcl/Tk files present (no window needed)
             (DATA_DIR / "self_test_ok.txt").write_text("ok", encoding="utf-8")

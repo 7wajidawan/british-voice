@@ -16,5 +16,5 @@ USE IT
 
 TEAM: each person installs it on their own laptop and picks a DIFFERENT voice.
 
-NOTE: the British voice plays about 1-2 seconds after you finish each sentence.
+NOTE: the British voice plays about 2-3 seconds after you finish each sentence.
 If something goes wrong, send a screenshot (or the file error_log.txt) to get it fixed.

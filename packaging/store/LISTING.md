@@ -18,19 +18,19 @@ How it works:
 • In Zoom, Teams, Google Meet or any calling app, choose that virtual microphone.
 
 Features:
-• 10 British voices (male and female, RP, London, Northern, Scottish), and 100+ more available.
+• 10 natural-sounding British voices (5 male, 5 female).
 • Each team member can choose a different voice.
 • Works offline after the first setup. Your voice never leaves your PC.
 • Free, no account, no ads.
 
 Please note:
-• The British voice speaks about 1–2 seconds after you finish each sentence.
+• The British voice speaks about 2–3 seconds after you finish each sentence.
 • It is a synthetic voice that reads out what you said; it is not your own voice.
 • Needs the free VB-Cable virtual microphone (the app links to it). Headphones recommended.
 
 **Features (bullet list field):**
 - Speak normally, be heard in a British voice
-- 10+ distinct British voices for your team
+- 10 natural British voices for your team
 - Works with Zoom, Microsoft Teams, Google Meet
 - Runs offline on your PC – private by design
 
@@ -50,7 +50,7 @@ microphone audio and play generated speech to a user-selected audio output devic
 To test without extra software: open the app, click "Preview voice" to hear a British voice.
 Then set "Send voice to" = your speakers and click Start; speak into the microphone and the
 app repeats your words in a British voice after you pause. First use downloads speech/voice
-model files (about 150 MB) from huggingface.co. For use in calling apps, the free third-party
+model files (about 500 MB) from huggingface.co and github.com. For use in calling apps, the free third-party
 VB-Cable virtual audio driver is optional and linked from the app; it is not bundled.
 The app is open source (GPL-3.0); the source code link is in the description.
 
